@@ -1,0 +1,13 @@
+#
+### Dlp output configuration
+###
+menu "Amlogic DLP Output Module"
+
+config AML_HELLO
+	boolean "HELLO Output Module"
+	default n
+	help
+	HELLO output module
+
+endmenu
+

@@ -1,0 +1,46 @@
+diff --git a/drivers/amlogic/display/dlp/jonah-dlp3438.c b/drivers/amlogic/display/dlp/jonah-dlp3438.c
+index e0419f9..55bf33f 100755
+--- a/drivers/amlogic/display/dlp/jonah-dlp3438.c
++++ b/drivers/amlogic/display/dlp/jonah-dlp3438.c
+@@ -535,6 +535,16 @@ void dlp_jni_flip(int val)
+ }
+ EXPORT_SYMBOL_GPL(dlp_jni_flip);
+ 
++void close_led(int data)
++{
++	if(data){
++		aml_dlp3438_write(0x52,0x00);
++	}else{
++		aml_dlp3438_write(0x52,0x07);
++	}
++}
++EXPORT_SYMBOL_GPL(close_led);
++
+ void dlp3438_phy_config(void)
+ {
+   aml_dlp3438_led(0x54,0xef,0x01,0x26,0x02,0x26,0x02);
+diff --git a/drivers/amlogic/display/hello/hello.c b/drivers/amlogic/display/hello/hello.c
+index f1c0363..432a32f 100755
+--- a/drivers/amlogic/display/hello/hello.c
++++ b/drivers/amlogic/display/hello/hello.c
+@@ -169,6 +169,7 @@ extern int dlp_unifykey_set(unsigned char *buf, int *len);
+ extern void dlp_jni_keystone(int);
+ extern void dlp_jni_led(int rval,int gval,int bval);
+ extern void dlp_jni_flip(int val);
++extern void close_led(int data);
+ extern int key_unify_write_write(char *keyname,unsigned char *keydata,unsigned int datalen);
+ static ssize_t hello_write(struct file* filp, const char __user *buf, size_t count, loff_t* f_pos) {
+     struct hello_test_dev* dev = filp->private_data;
+@@ -282,6 +283,12 @@ static ssize_t hello_write(struct file* filp, const char __user *buf, size_t cou
+     dlp_filp_set_len = sizeof(test);
+     key_unify_write(dlp_filp_name,test,dlp_filp_set_len);
+   }
++  if(tmp ==1222){
++	  close_led(1);
++  }
++  if(tmp ==1333){
++	  close_led(0);
++  }
+ 
+     if(down_interruptible(&(dev->sem))) {  
+ 		printk("hello_write down_interruptible is error\n");

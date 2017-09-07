@@ -1,0 +1,12 @@
+#
+# Fan output configuration
+#
+menu "Amlogic FAN Output Module"
+
+config AML_FAN
+	boolean "FAN Output Module"
+	default n
+	help
+		FAN output module
+
+endmenu

@@ -1,0 +1,12 @@
+#
+## Cw Battery configuration
+##
+menu "Amlogic CW_test Change battery Module"
+
+config AML_CW_TEST
+	boolean "CW Change battery Module"
+	default n
+	help
+		CW change battery module
+
+endmenu

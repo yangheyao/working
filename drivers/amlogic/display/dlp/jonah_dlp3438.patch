@@ -1,0 +1,41 @@
+diff --git a/drivers/amlogic/display/dlp/jonah-dlp3438.c b/drivers/amlogic/display/dlp/jonah-dlp3438.c
+index 27df94d5957..e59116652a2 100755
+--- a/drivers/amlogic/display/dlp/jonah-dlp3438.c
++++ b/drivers/amlogic/display/dlp/jonah-dlp3438.c
+@@ -493,7 +493,7 @@ void dlp3438_phy_config(void)
+   //aml_dlp3438_write32(0x07,0x42);
+   printk("Yangheyao Send 32bit 0x07 0x42\n");
+   //mdelay(10000);
+-  aml_dlp3438_write32(0x07,0x43);
++  //aml_dlp3438_write32(0x07,0x43);
+   printk("Yangheyao Send 32bit 0x07 0x43\n");
+ 
+   mdelay(100);
+@@ -503,6 +503,9 @@ void dlp3438_phy_config(void)
+   //aml_dlp3438_keystone(0x84,0x3c);
+   //
+   /*jonah add Display Image Orientation start*/
++  
++
++#if 0
+   aml_dlp3438_write(0x14,0x06);//This is normal
+   mdelay(300);
+   aml_dlp3438_write(0x14,0x04);
+@@ -513,6 +516,8 @@ void dlp3438_phy_config(void)
+   mdelay(300);
+   aml_dlp3438_write(0x14,0x06);//This is normal
+   /*jonah add is end*/
++#endif
++
+ 
+   /*jonah add Write RGB LED Current start*/
+ #if 0
+@@ -524,7 +529,7 @@ void dlp3438_phy_config(void)
+   mdelay(10000);
+ #endif
+   //This next is for test 500
+-#if 1
++#if 0
+   aml_dlp3438_led(0x54,0xf4,0x01,0xf4,0x01,0xf4,0x01);
+   printk("jonah led set 400 RGB\n");
+   mdelay(100);

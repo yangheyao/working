@@ -1,0 +1,45 @@
+diff --git a/arch/arm64/boot/dts/meson_gxtvbb_p391.dts b/arch/arm64/boot/dts/meson_gxtvbb_p391.dts
+index d275105..0d281f3 100755
+--- a/arch/arm64/boot/dts/meson_gxtvbb_p391.dts
++++ b/arch/arm64/boot/dts/meson_gxtvbb_p391.dts
+@@ -734,7 +734,7 @@
+ 		compatible = "amlogic, unifykey";
+ 		status = "ok";
+ 
+-		unifykey-num = <14>;
++		unifykey-num = <17>;
+ 		unifykey-index-0 = <&keysn_0>;
+ 		unifykey-index-1 = <&keysn_1>;
+ 		unifykey-index-2 = <&keysn_2>;
+@@ -749,6 +749,9 @@
+ 		unifykey-index-11 = <&keysn_11>;
+ 		unifykey-index-12 = <&keysn_12>;
+ 		unifykey-index-13 = <&keysn_13>;
++		unifykey-index-14 = <&keysn_14>;
++		unifykey-index-15 = <&keysn_15>;
++		unifykey-index-16 = <&keysn_16>;
+ 
+                 keysn_0: key_0{
+ 			key-name = "usid";
+@@ -824,6 +827,21 @@
+ 			key-type  = "sha1";
+ 			key-permit = "read","write","del";
+ 		};
++                keysn_14: key_14{
++			key-name = "dlp_keystone";
++			key-device = "normal";
++			key-permit = "read","write","del";
++		};
++		keysn_15: key_15{
++			key-name = "dlp_led";
++			key-device = "normal";
++			key-permit = "read","write","del";
++		};
++		keysn_16: key_16{
++			key-name = "dlp_filp";
++			key-device = "normal";
++			key-permit = "read","write","del";
++		};
+         };//End unifykey
+ 	ampmu4 {
+ 		compatible = "amlogic, pmu4_prober";

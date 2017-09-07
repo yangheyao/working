@@ -1,0 +1,158 @@
+diff --git a/drivers/amlogic/display/hello/hello.c b/drivers/amlogic/display/hello/hello.c
+index f3449ba142b..faae209d153 100755
+--- a/drivers/amlogic/display/hello/hello.c
++++ b/drivers/amlogic/display/hello/hello.c
+@@ -18,6 +18,16 @@
+ #include <linux/slab.h>
+ #include <linux/string.h>
+ #include <linux/time.h>
++/*jonah add for unifykey*/
++#include <linux/version.h>
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++#include <linux/delay.h>
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/reset.h>
++#include <linux/amlogic/vout/lcd_unifykey.h>
++/*end*/
+ 
+   
+ #include "hello.h"  
+@@ -110,9 +120,11 @@ out:
+ }  
+   
+ /*写字符串*/  
++extern int dlp_unifykey_set(unsigned char *buf, int *len);
+ extern void dlp_jni_keystone(int);
+ extern void dlp_jni_led(int rval,int gval,int bval);
+ extern void dlp_jni_flip(int val);
++extern int key_unify_write_write(char *keyname,unsigned char *keydata,unsigned int datalen);
+ static ssize_t hello_write(struct file* filp, const char __user *buf, size_t count, loff_t* f_pos) {
+     struct hello_test_dev* dev = filp->private_data;
+     ssize_t err = 0;
+@@ -121,20 +133,60 @@ static ssize_t hello_write(struct file* filp, const char __user *buf, size_t cou
+ 	//unsigned long res;
+ 	//size_t haha;
+ 	int tmp;
++	int temp;
++	int ret;
++	char *dlp_keystone_set;
++	char *dlp_led_set;
++	char *dlp_filp_set;
++	int dlp_led_set_len;
++	int dlp_keystone_set_len;
++	int dlp_filp_set_len;
++	char *dlp_keystone_name;
++	char *dlp_led_name;
++	char *dlp_filp_name;
++	char *test;
++
++	dlp_keystone_name = "dlp_keystone";
++	dlp_led_name = "dlp_led";
++	dlp_filp_name = "dlp_filp";
+   
+ 	printk("hello_write buff is %s\n",buf);
+ 	//tmp = buf[0];	
+ 	//printk("hello_write buff temp is %d\n",tmp);
++	dlp_keystone_set = kzalloc(count,GFP_KERNEL);
++	if(!dlp_keystone_set){
++		printk("memory not enough,%s:%d\n",__func__,__LINE__);
++		return -ENOMEM;
++	}
++	dlp_led_set = kzalloc(count,GFP_KERNEL);
++	if(!dlp_led_set){
++		printk("memory not enough,%s:%d\n",__func__,__LINE__);
++		return -ENOMEM;
++	}
++	dlp_filp_set = kzalloc(count,GFP_KERNEL);
++	if(!dlp_filp_set){
++		printk("memory not enough,%s:%d\n",__func__,__LINE__);
++		return -ENOMEM;
++	}
++
+ 	tmp = simple_strtoul(buf,NULL,10);
++	
+ 	//haha = after - buf;
+ 	printk("hello_write buff  tmp=%d \n",tmp);
+ 
+ 	
+   printk("hello_write tmp %d\n",tmp);
+   /*keystone is send -255---255*/
+-  if(tmp < 256){
++  if(tmp < 255){
+     printk("This is dlp_jni_keystone is start tmp=%d\n",tmp);
+     dlp_jni_keystone(tmp);
++	if(copy_from_user(dlp_keystone_set,buf,count)){
++	  ret = -EFAULT;
++	  goto exit;
++	}
++    dlp_keystone_set_len = sizeof(dlp_keystone_set);
++    mdelay(10);
++    key_unify_write(dlp_keystone_name,dlp_keystone_set,dlp_keystone_set_len);
+   }
+ 
+   /*300--400 value*/
+@@ -142,13 +194,49 @@ static ssize_t hello_write(struct file* filp, const char __user *buf, size_t cou
+     if(tmp < 420){
+       printk("This is dlp_jni_led is start tmp=%d\n",tmp);
+       dlp_jni_led(tmp,tmp,tmp);
++	if(copy_from_user(dlp_led_set,buf,count)){
++	  ret = -EFAULT;
++	  goto exit;
++	}
++      mdelay(10);
++      dlp_led_set_len = sizeof(dlp_led_set);
++      key_unify_write(dlp_led_name,dlp_led_set,dlp_led_set_len);
+     }
+   }
+ 
+   /*1111/2222/3333/4444*/
+   if(tmp > 450){
+     printk("This is dlp_jni_flip is start tmp=%d\n",tmp);
++    temp = tmp;
+     dlp_jni_flip(tmp);
++    if(temp == 1111){
++	    printk("This is dlp_filp is 6\n");
++	    test = "6";
++    }
++    if(temp == 2222){
++	    printk("This is dlp_filp is 4\n");
++	    test = "4";
++    }
++    if(temp == 3333){
++	    printk("This is dlp_filp is 2\n");
++	    test = "2";
++    }
++    if(temp == 4444){
++	    printk("This is dlp_filp is 0\n");
++	    test = "0";
++    }
++    /*
++    if(copy_from_user(dlp_filp_set,buf,count)){
++	    printk("This is error\n");
++	ret = -EFAULT;
++	goto exit;
++     }
++     */
++    mdelay(10);
++    //dlp_filp_set_len = sizeof(dlp_filp_set);
++    //key_unify_write(dlp_filp_name,dlp_filp_set,dlp_filp_set_len);
++    dlp_filp_set_len = sizeof(test);
++    key_unify_write(dlp_filp_name,test,dlp_filp_set_len);
+   }
+ 
+     if(down_interruptible(&(dev->sem))) {  
+@@ -164,7 +252,11 @@ static ssize_t hello_write(struct file* filp, const char __user *buf, size_t cou
+   
+   
+ out:  
+-    up(&(dev->sem));  
++    up(&(dev->sem));
++
++ exit:
++    kfree(dlp_keystone_set);
++    return ret;
+ 
+     return 0;  
+ }  
